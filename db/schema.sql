@@ -9,7 +9,6 @@ CREATE TABLE department
     AUTO_INCREMENT,
 	name varchar
     (255) NOT NULL,
-	quote TEXT NOT NULL,
 	PRIMARY KEY
     (id)
 );
@@ -22,7 +21,7 @@ CREATE TABLE department
         (30),
     salary decimal
         (10,4),
-    department_id int not null auto_increment,
+    department_id int not null,
 	PRIMARY KEY
         (id)
 );
@@ -35,7 +34,7 @@ CREATE TABLE department
             (30),
     last_name VARCHAR
             (30),
-    role_id INT
+    role_id INT,
     manager_id INT, 
     PRIMARY KEY
             (id)
