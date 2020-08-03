@@ -375,7 +375,50 @@ function updateEmployeeRole() {
 //Delete departments, roles, and employees
 
 function deleteDepartment() {
-  console.log("this is not done");
+  var query = "SELECT department.name, department.id FROM department";
+  connection.query(query, function (err, res) {
+    if (err) throw err;
+
+    inquirer
+      .prompt({
+        name: "deleteDep",
+        type: "rawlist",
+        message: "which depratment would you like to delete?",
+        choices: function () {
+          var deleteChoice = [];
+          for (i = 0; i < res.length; i++) {
+            deleteChoice.push(res[i].name);
+          }
+          console.log(deleteChoice);
+          return deleteChoice;
+        }
+      })
+      .then(function (answer) {
+        var chosendepartment;
+        for (var i = 0; i < res.length; i++) {
+          if (res[i].name === answer.deleteDep) {
+            chosendepartment = res[i];
+            console.log(chosendepartment.id);
+          }
+        }
+
+        console.log("Deleting department.\n");
+        connection.query(
+          "DELETE FROM department WHERE ?",
+          {
+            name: chosendepartment.name
+          },
+          function (err, res) {
+            if (err) throw err;
+            console.log(res.affectedRows + " department deleted!\n");
+            // Call readProducts AFTER the DELETE completes
+            viewDepartment(function () {
+              again();
+            });
+          }
+        );
+      });
+  });
 }
 
 function deleteRole() {
