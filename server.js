@@ -293,48 +293,45 @@ function updateEmployeeManager() {
 // });
 
 function updateEmployeeRole() {
-  var query = "SELECT employee.first_name, employee.last_name FROM employee";
-  connection.query(query, function (err, res) {
+  var employeeQuery =
+    "SELECT employee.first_name, employee.last_name FROM employee";
+  connection.query(employeeQuery, function (err, employeeRes) {
     if (err) throw err;
-    // console.log(res[0].first_name + " " + res[0].last_name);
+    var roleQuery = "SELECT title FROM role";
+    connection.query(roleQuery, function (err, roleRes) {
+      if (err) throw err;
+      // console.log(res[0].first_name + " " + res[0].last_name);
 
-    inquirer.prompt({
-      name: "roleId",
-      type: "rawlist",
-      message: "What is the employees first and last name?",
-      choices: function () {
-        var choicesArr = [];
-        for (var i = 0; i < res.length; i++) {
-          choicesArr.push(res[i].first_name + " " + res[i].last_name);
+      inquirer.prompt([
+        {
+          name: "employeeId",
+          type: "rawlist",
+          message: "What is the employees first and last name?",
+          choices: function () {
+            var employeeChoicesArr = [];
+            for (var i = 0; i < employeeRes.length; i++) {
+              employeeChoicesArr.push(
+                employeeRes[i].first_name + " " + employeeRes[i].last_name
+              );
+            }
+            return employeeChoicesArr;
+          }
+        },
+        {
+          name: "newRole",
+          type: "rawlist",
+          message: "What is the new role?",
+          choices: function () {
+            var roleChoicesArr = [];
+            for (var i = 0; i < roleRes.length; i++) {
+              roleChoicesArr.push(roleRes[i].title);
+            }
+            return roleChoicesArr;
+          }
         }
-        return choicesArr;
-      }
+      ]);
     });
   });
-  // .then(function (res) {
-  //   switch (res.roleId) {
-  //     case "answer1":
-  //       break;
-  //   }
-  // });
-  // var query = connection.query(
-  //   "UPDATE employee SET ? WHERE ?",
-  //   [
-  //     {
-  //       quantity: 100
-  //     },
-  //     {
-  //       flavor: "Rocky Road"
-  //     }
-  //   ],
-  //   function (err, res) {
-  //     if (err) throw err;
-  //     console.log(res.affectedRows + " products updated!\n");
-  //     // Call deleteProduct AFTER the UPDATE completes
-  //     deleteProduct();
-  //   }
-  // );
-  // console.log(choices);
 }
 
 //Delete departments, roles, and employees
