@@ -86,16 +86,19 @@ function runSearch() {
         //TODO
         case "View employee":
           viewEmployee();
+          // again();
           break;
 
         //TODO
         case "View department":
           viewDepartment();
+
           break;
 
         //TODO
         case "Update employee roles":
           updateEmployeeRole();
+          // again();
           break;
 
         case "Update employee manager":
@@ -250,7 +253,7 @@ function viewRole() {
   connection.query(query, function (err, res) {
     if (err) throw err;
     console.table(res);
-    again();
+
     return res;
   });
 
@@ -274,7 +277,7 @@ function viewEmployee() {
     if (err) throw err;
     console.table(res);
     again();
-    return res;
+    // return res;
   });
   //console.log("this is not done");
 }
@@ -288,13 +291,24 @@ function updateEmployeeManager() {
 // updateEmployeeManager().then(function (res) {
 //   console.log(res);
 // });
+
 function updateEmployeeRole() {
-  viewEmployee(function (res) {
+  var query = "SELECT employee.first_name, employee.last_name FROM employee";
+  connection.query(query, function (err, res) {
+    if (err) throw err;
+    // console.log(res[0].first_name + " " + res[0].last_name);
+
     inquirer.prompt({
       name: "roleId",
-      type: "list",
+      type: "rawlist",
       message: "What is the employees first and last name?",
-      choices: [res.first_name, res.last_name]
+      choices: function () {
+        var choicesArr = [];
+        for (var i = 0; i < res.length; i++) {
+          choicesArr.push(res[i].first_name + " " + res[i].last_name);
+        }
+        return choicesArr;
+      }
     });
   });
   // .then(function (res) {
@@ -320,7 +334,7 @@ function updateEmployeeRole() {
   //     deleteProduct();
   //   }
   // );
-  console.log(choices);
+  // console.log(choices);
 }
 
 //Delete departments, roles, and employees
