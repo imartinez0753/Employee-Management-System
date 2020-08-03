@@ -195,20 +195,40 @@ function addRole() {
 
 function addEmployee() {
   inquirer
-    .prompt({
-      name: "newName",
-      type: "input",
-      message: "What is the departments Name?"
-    })
+    .prompt([
+      {
+        name: "newFirstName",
+        type: "input",
+        message: "What is the employee's first name?"
+      },
+      {
+        name: "newLastName",
+        type: "input",
+        message: "What is the employee's last name?"
+      },
+      {
+        name: "newRoleId",
+        type: "input",
+        message: "What is the employee's role_id?"
+      },
+      {
+        name: "newManagerId",
+        type: "input",
+        message: "What is the employee's manager_id?"
+      }
+    ])
     .then(function (res) {
       var query = connection.query(
-        "INSERT INTO department SET ?",
+        "INSERT INTO employee SET ?",
         {
-          name: res.newName
+          first_name: res.newFirstName,
+          last_name: res.newLastName,
+          role_id: res.newRoleId,
+          manager_id: res.newManagerId
         },
         function (err, res) {
           if (err) throw err;
-          console.log(res.affectedRows + "department added");
+          console.log(res.affectedRows + "employee added");
           // Call updateProduct AFTER the INSERT completes
           again();
         }
@@ -216,7 +236,7 @@ function addEmployee() {
       console.log(query.sql);
     });
 
-  console.log("this isn't done yet");
+  // console.log("this isn't done yet");
 }
 
 // View departments, roles, employees
@@ -231,27 +251,30 @@ function viewRole() {
     if (err) throw err;
     console.table(res);
     again();
+    return res;
   });
 
   //console.log("this is not done");
 }
 
 function viewDepartment() {
-  var query = "SELECT * FROM department";
+  var query = "SELECT name FROM department";
   connection.query(query, function (err, res) {
     if (err) throw err;
     console.table(res);
     again();
+    return res;
   });
   //console.log("this is not done");
 }
 
 function viewEmployee() {
-  var query = "SELECT * FROM employee";
+  var query = "SELECT employee.first_name, employee.last_name FROM employee";
   connection.query(query, function (err, res) {
     if (err) throw err;
     console.table(res);
     again();
+    return res;
   });
   //console.log("this is not done");
 }
@@ -266,37 +289,38 @@ function updateEmployeeManager() {
 //   console.log(res);
 // });
 function updateEmployeeRole() {
-  inquirer
-    .prompt({
+  viewEmployee(function (res) {
+    inquirer.prompt({
       name: "roleId",
       type: "list",
       message: "What is the employees first and last name?",
-      choices: []
-    })
-    .then(function (res) {
-      switch (res.roleId) {
-        case "answer1":
-          break;
-      }
+      choices: [res.first_name, res.last_name]
     });
-  var query = connection.query(
-    "UPDATE employee SET ? WHERE ?",
-    [
-      {
-        quantity: 100
-      },
-      {
-        flavor: "Rocky Road"
-      }
-    ],
-    function (err, res) {
-      if (err) throw err;
-      console.log(res.affectedRows + " products updated!\n");
-      // Call deleteProduct AFTER the UPDATE completes
-      deleteProduct();
-    }
-  );
-  console.log("this is not done");
+  });
+  // .then(function (res) {
+  //   switch (res.roleId) {
+  //     case "answer1":
+  //       break;
+  //   }
+  // });
+  // var query = connection.query(
+  //   "UPDATE employee SET ? WHERE ?",
+  //   [
+  //     {
+  //       quantity: 100
+  //     },
+  //     {
+  //       flavor: "Rocky Road"
+  //     }
+  //   ],
+  //   function (err, res) {
+  //     if (err) throw err;
+  //     console.log(res.affectedRows + " products updated!\n");
+  //     // Call deleteProduct AFTER the UPDATE completes
+  //     deleteProduct();
+  //   }
+  // );
+  console.log(choices);
 }
 
 //Delete departments, roles, and employees
@@ -318,5 +342,3 @@ function deleteEmployee() {
 function viewDepartmentBudget() {
   console.log("this is not done");
 }
-
-//
