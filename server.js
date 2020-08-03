@@ -249,7 +249,7 @@ function viewEmployeeByManager() {
 }
 
 function viewRole() {
-  var query = "SELECT title FROM role";
+  var query = "SELECT role.title, role.department_id FROM role";
   connection.query(query, function (err, res) {
     if (err) throw err;
     console.table(res);
@@ -261,7 +261,7 @@ function viewRole() {
 }
 
 function viewDepartment() {
-  var query = "SELECT name FROM department";
+  var query = "SELECT department.name, department.id FROM department";
   connection.query(query, function (err, res) {
     if (err) throw err;
     console.table(res);
@@ -294,42 +294,80 @@ function updateEmployeeManager() {
 
 function updateEmployeeRole() {
   var employeeQuery =
-    "SELECT employee.first_name, employee.last_name FROM employee";
+    "SELECT employee.first_name, employee.last_name, employee.id FROM employee";
   connection.query(employeeQuery, function (err, employeeRes) {
     if (err) throw err;
-    var roleQuery = "SELECT title FROM role";
+    var roleQuery = "SELECT role.title, role.department_id FROM role";
     connection.query(roleQuery, function (err, roleRes) {
       if (err) throw err;
       // console.log(res[0].first_name + " " + res[0].last_name);
 
-      inquirer.prompt([
-        {
-          name: "employeeId",
-          type: "rawlist",
-          message: "What is the employees first and last name?",
-          choices: function () {
-            var employeeChoicesArr = [];
-            for (var i = 0; i < employeeRes.length; i++) {
-              employeeChoicesArr.push(
-                employeeRes[i].first_name + " " + employeeRes[i].last_name
-              );
+      inquirer
+        .prompt([
+          {
+            name: "employeeId",
+            type: "rawlist",
+            message: "What is the employees first and last name?",
+            choices: function () {
+              var employeeChoicesArr = [];
+              for (var i = 0; i < employeeRes.length; i++) {
+                employeeChoicesArr.push(
+                  employeeRes[i].first_name + " " + employeeRes[i].last_name
+                );
+              }
+              return employeeChoicesArr;
             }
-            return employeeChoicesArr;
-          }
-        },
-        {
-          name: "newRole",
-          type: "rawlist",
-          message: "What is the new role?",
-          choices: function () {
-            var roleChoicesArr = [];
-            for (var i = 0; i < roleRes.length; i++) {
-              roleChoicesArr.push(roleRes[i].title);
+          },
+          {
+            name: "newRole",
+            type: "rawlist",
+            message: "What is the new role?",
+            choices: function () {
+              var roleChoicesArr = [];
+              for (var i = 0; i < roleRes.length; i++) {
+                roleChoicesArr.push(roleRes[i].title);
+              }
+              return roleChoicesArr;
             }
-            return roleChoicesArr;
           }
-        }
-      ]);
+        ])
+        .then(function (answer) {
+          console.log(answer);
+
+          var chosenEmployee;
+          for (var i = 0; i < employeeRes.length; i++) {
+            if (
+              employeeRes[i].first_name + " " + employeeRes[i].last_name ===
+              answer.employeeId
+            ) {
+              chosenEmployee = employeeRes[i];
+              console.log(chosenEmployee.id);
+            }
+          }
+          // console.log(answer.newRole);
+          var chosenRole;
+          for (var i = 0; i < roleRes.length; i++) {
+            // console.log(roleRes[i]);
+            if (roleRes[i].title === answer.newRole) {
+              chosenRole = roleRes[i];
+              console.log(chosenRole.department_id);
+            }
+          }
+          connection.query(
+            "UPDATE employee SET ? WHERE ?",
+            [
+              { role_id: chosenRole.department_id },
+              {
+                id: chosenEmployee.id
+              }
+            ],
+            function (error) {
+              if (error) throw err;
+              console.log("updated successfully!");
+              again();
+            }
+          );
+        });
     });
   });
 }
