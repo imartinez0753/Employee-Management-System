@@ -389,7 +389,7 @@ function deleteDepartment() {
           for (i = 0; i < res.length; i++) {
             deleteChoice.push(res[i].name);
           }
-          console.log(deleteChoice);
+          // console.log(deleteChoice);
           return deleteChoice;
         }
       })
@@ -422,11 +422,104 @@ function deleteDepartment() {
 }
 
 function deleteRole() {
-  console.log("this is not done");
+  var query = "SELECT title FROM role";
+  connection.query(query, function (err, res) {
+    if (err) throw err;
+
+    inquirer
+      .prompt({
+        name: "deleteRole",
+        type: "rawlist",
+        message: "which role would you like to delete?",
+        choices: function () {
+          var deleteRoleChoice = [];
+          for (i = 0; i < res.length; i++) {
+            deleteRoleChoice.push(res[i].title);
+          }
+          // console.log(deleteRoleChoice);
+          return deleteRoleChoice;
+        }
+      })
+      .then(function (answer) {
+        var chosenRole;
+        for (var i = 0; i < res.length; i++) {
+          if (res[i].title === answer.deleteRole) {
+            chosenRole = res[i];
+            console.log(chosenRole.title);
+          }
+        }
+
+        console.log("Deleting role.\n");
+        connection.query(
+          "DELETE FROM role WHERE ?",
+          {
+            title: chosenRole.title
+          },
+          function (err, res) {
+            if (err) throw err;
+            console.log(res.affectedRows + " role deleted!");
+            // Call readProducts AFTER the DELETE completes
+            viewRole(function () {
+              again();
+            });
+          }
+        );
+      });
+  });
+  // console.log("this is not done");
 }
 
 function deleteEmployee() {
-  console.log("this is not done");
+  var query = "SELECT * FROM employee";
+  connection.query(query, function (err, res) {
+    if (err) throw err;
+
+    inquirer
+      .prompt({
+        name: "deleteEmployee",
+        type: "rawlist",
+        message: "which employee would you like to delete?",
+        choices: function () {
+          var deleteEmployeeChoice = [];
+          for (i = 0; i < res.length; i++) {
+            deleteEmployeeChoice.push(
+              res[i].first_name + " " + res[i].last_name
+            );
+          }
+          // console.log(deleteRoleChoice);
+          return deleteEmployeeChoice;
+        }
+      })
+      .then(function (answer) {
+        var chosenEmployee;
+        for (var i = 0; i < res.length; i++) {
+          if (
+            res[i].first_name + " " + res[i].last_name ===
+            answer.deleteEmployee
+          ) {
+            chosenEmployee = res[i];
+            console.log(chosenEmployee.title);
+          }
+        }
+
+        console.log("Deleting Employee.\n");
+        connection.query(
+          "DELETE FROM employee WHERE ?",
+          {
+            first_name: chosenEmployee.first_name
+          },
+          function (err, res) {
+            if (err) throw err;
+            console.log(res.affectedRows + " employee deleted!");
+            // Call readProducts AFTER the DELETE completes
+            viewEmployee(function () {
+              again();
+            });
+          }
+        );
+      });
+  });
+  // console.log("this is not done");
 }
 
 //View the total utilized budget of a department
