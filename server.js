@@ -20,6 +20,25 @@ connection.connect(function (err) {
   runSearch();
 });
 
+function again() {
+  inquirer
+    .prompt({
+      name: "repeat",
+      type: "confirm",
+      message: "Do you have more to do?"
+    })
+    .then(function (res) {
+      switch (res.repeat) {
+        case true:
+          runSearch();
+          break;
+        case false:
+          connection.end();
+          break;
+      }
+    });
+}
+
 function runSearch() {
   inquirer
     .prompt({
@@ -108,14 +127,95 @@ function runSearch() {
 
 // Add departments, roles, employees
 function addDepartment() {
-  console.log("needs to be completed");
+  inquirer
+    .prompt({
+      name: "newName",
+      type: "input",
+      message: "What is the departments Name?"
+    })
+    .then(function (res) {
+      var query = connection.query(
+        "INSERT INTO department SET ?",
+        {
+          name: res.newName
+        },
+        function (err, res) {
+          if (err) throw err;
+          console.log(res.affectedRows + "department added");
+          // Call updateProduct AFTER the INSERT completes
+          again();
+        }
+      );
+      console.log(query.sql);
+    });
+
+  //console.log("needs to be completed");
 }
 
 function addRole() {
-  console.log("this isn't finished");
+  inquirer
+    .prompt([
+      {
+        name: "newTitle",
+        type: "input",
+        message: "What is the new role?"
+      },
+      {
+        name: "newSalary",
+        type: "input",
+        message: "What is the Salary?"
+      },
+      {
+        name: "newDepartment_id",
+        type: "input",
+        message: "What is this department number?"
+      }
+    ])
+    .then(function (res) {
+      console.log(res);
+      var query = connection.query(
+        "INSERT INTO role SET ?",
+        {
+          title: res.newTitle,
+          salary: res.newSalary,
+          department_id: res.newDepartment_id
+        },
+        function (err, res) {
+          if (err) throw err;
+          console.log(res.affectedRows + "Role added");
+          // Call updateProduct AFTER the INSERT completes
+          again();
+        }
+      );
+      console.log(query.sql);
+    });
+
+  //  console.log("this isn't finished");
 }
 
 function addEmployee() {
+  inquirer
+    .prompt({
+      name: "newName",
+      type: "input",
+      message: "What is the departments Name?"
+    })
+    .then(function (res) {
+      var query = connection.query(
+        "INSERT INTO department SET ?",
+        {
+          name: res.newName
+        },
+        function (err, res) {
+          if (err) throw err;
+          console.log(res.affectedRows + "department added");
+          // Call updateProduct AFTER the INSERT completes
+          again();
+        }
+      );
+      console.log(query.sql);
+    });
+
   console.log("this isn't done yet");
 }
 
@@ -126,10 +226,11 @@ function viewEmployeeByManager() {
 }
 
 function viewRole() {
-  var query = "SELECT * FROM role";
+  var query = "SELECT title FROM role";
   connection.query(query, function (err, res) {
     if (err) throw err;
     console.table(res);
+    again();
   });
 
   //console.log("this is not done");
@@ -140,6 +241,7 @@ function viewDepartment() {
   connection.query(query, function (err, res) {
     if (err) throw err;
     console.table(res);
+    again();
   });
   //console.log("this is not done");
 }
@@ -149,6 +251,7 @@ function viewEmployee() {
   connection.query(query, function (err, res) {
     if (err) throw err;
     console.table(res);
+    again();
   });
   //console.log("this is not done");
 }
@@ -156,10 +259,43 @@ function viewEmployee() {
 // Update employee roles
 
 function updateEmployeeManager() {
-  console.log("this is not done");
+  var mystring = "this is not done";
+  return mystring;
 }
-
+// updateEmployeeManager().then(function (res) {
+//   console.log(res);
+// });
 function updateEmployeeRole() {
+  inquirer
+    .prompt({
+      name: "roleId",
+      type: "list",
+      message: "What is the employees first and last name?",
+      choices: []
+    })
+    .then(function (res) {
+      switch (res.roleId) {
+        case "answer1":
+          break;
+      }
+    });
+  var query = connection.query(
+    "UPDATE employee SET ? WHERE ?",
+    [
+      {
+        quantity: 100
+      },
+      {
+        flavor: "Rocky Road"
+      }
+    ],
+    function (err, res) {
+      if (err) throw err;
+      console.log(res.affectedRows + " products updated!\n");
+      // Call deleteProduct AFTER the UPDATE completes
+      deleteProduct();
+    }
+  );
   console.log("this is not done");
 }
 
@@ -182,3 +318,5 @@ function deleteEmployee() {
 function viewDepartmentBudget() {
   console.log("this is not done");
 }
+
+//
