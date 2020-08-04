@@ -253,7 +253,7 @@ function viewRole() {
   connection.query(query, function (err, res) {
     if (err) throw err;
     console.table(res);
-
+    again();
     return res;
   });
 
@@ -527,3 +527,12 @@ function deleteEmployee() {
 function viewDepartmentBudget() {
   console.log("this is not done");
 }
+
+// var array = [1, 2, 3, 4, 5];
+
+// // Getting sum of numbers
+// var sum = array.reduce(function (a, b) {
+//   return a + b;
+// }, 0);
+
+// console.log(sum);
